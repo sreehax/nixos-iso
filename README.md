@@ -10,4 +10,4 @@ Installing nix on your system is [very simple](https://zero-to-nix.com/start/ins
 You can either clone this repository and issue `nix build`, or you can run this command from anywhere you have write access: `nix build github:sreehax/nixos-iso`.
 
 ### Updating
-This repository is locked to a specific revision of nixpkgs, as seen in `flake.lock`. If you want to run it with the latest unstable nixpkgs, just issue `nix flake update` in this directory before building or run `nix run --override-input nixpkgs nixpkgs/nixos-unstable` for a one-off solution.
+This repository is locked to a specific revision of nixpkgs, as seen in `flake.lock`. If you want to build it with the latest unstable nixpkgs, just issue `nix flake update` in this directory before building or run `nix build --override-input nixpkgs nixpkgs/nixos-unstable github:sreehax/nixos-iso` for a one-off solution.
