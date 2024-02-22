@@ -49,8 +49,10 @@ jobs:
         run: |
           nix build --extra-experimental-features 'nix-command flakes' -j2 -L
           cp result/iso/*.iso $(basename result/iso/*.iso | sed s/x86_64-linux/amd64-${{ github.ref_name }}/)
+
       - name: upload artifact
         uses: actions/upload-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: iso
           path: ./*.iso
