@@ -1,6 +1,8 @@
 {
   description = "NixOS with bcachefs";
-  inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
+  inputs = {
+    nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
+  };
   outputs = { self, nixpkgs }: rec {
     nixosConfigurations = {
       bcachefs = nixpkgs.lib.nixosSystem {
