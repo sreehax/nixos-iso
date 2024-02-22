@@ -4,24 +4,66 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout repository
+        uses: actions/checkout@v4
 
-      - uses: cachix/install-nix-action@v25
+      - name: install nix
+        uses: cachix/install-nix-action@v25
         with:
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
-            auto-optimize-store = true
+            auto-optimise-store = true
             keep-outputs = true
             keep-derivations = true
-      - name: build installer
+
+      - name: cache the nix store
+        uses: actions/cache@v4
+        with:
+          key: isobuilder-${{ github.sha }}
+          restore-keys: |
+            isobuilder
+          path: |
+            nix_store_dir
+            nix_store_db.sqlite
+
+      - name: restore the cached nix store
+        run: |
+          if [ -e nix_store_db.sqlite ]; then
+            sudo systemctl stop nix-daemon
+
+            # put cached store paths back
+            sudo rm -rf /nix/store /nix/var/nix/db/db.sqlite
+            sudo mv nix_store_dir /nix/store
+            sudo cp nix_store_db.sqlite /nix/var/nix/db/db.sqlite
+            
+            # fix permissions
+            sudo chmod 1775 /nix/store
+            sudo chown root:nixbld /nix/store
+            sudo chmod 0644 /nix/var/nix/db/db.sqlite
+            sudo chown -R root:root /nix/store /nix/var/nix/db/db.sqlite
+
+            sudo systemctl start nix-daemon
+          fi
+
+      - name: build iso
         run: |
           nix build --extra-experimental-features 'nix-command flakes' -j2 -L
-          cp result/iso/*.iso .
+          cp result/iso/*.iso $(basename result/iso/*.iso | sed s/x86_64-linux/amd64-${{ github.ref_name }}/)
       - uses: actions/upload-artifact@v4
         with:
           name: iso
           path: ./*.iso
 
-      - uses: softprops/action-gh-release@v1
+      - name: create the github release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: ./*.iso
+
+      - name: prepare nix store for caching
+        run: |
+          nix-collect-garbage
+          sudo systemctl stop nix-daemon
+
+          sudo mv /nix/store nix_store_dir
+          sudo mv /nix/var/nix/db/db.sqlite nix_store_db.sqlite
