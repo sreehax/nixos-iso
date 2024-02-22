@@ -1,5 +1,7 @@
 name: build ISO image
 on: [push]
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -54,7 +56,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: iso
           path: ./*.iso
 
       # this will only run if we have a tagged commit
