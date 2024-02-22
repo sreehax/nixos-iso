@@ -1,6 +1,8 @@
 # NixOS ISO with bcachefs
 This project lets you easily build a NixOS ISO with bcachefs support. It can easily be modified to change the configuration to your liking.
 
+If you don't want to build it yourself, just download the ISO from releases. It should be the same (byte for byte) as the ISO you build.
+
 ## Prerequisites
 All you need to build this is an x86_64 NixOS system or any x86_64 Linux system with nix installed.
 
