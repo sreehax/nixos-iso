@@ -1,5 +1,8 @@
 name: build ISO image
-on: [push]
+on:
+  push:
+    tags:
+      - '*' # only run when we are tagged
 permissions:
   contents: write
 jobs:
