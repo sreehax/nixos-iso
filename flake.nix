@@ -7,7 +7,7 @@
     nixosConfigurations = {
       bcachefs = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { nixpkgs };
+        specialArgs = { inherit nixpkgs; };
         modules = [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
           ./configuration.nix
