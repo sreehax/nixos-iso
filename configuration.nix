@@ -34,6 +34,13 @@
     zstd
   ];
 
+  # iwd is better
+  networking.wireless.enable = false;
+  networking.wireless.iwd = {
+    enable = true;
+    settings.General.EnableNetworkConfiguration = true;
+  };
+
   # supports things like `nix run n#bash`
   nix = {
     package = pkgs.lix;
